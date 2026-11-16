@@ -1,0 +1,15 @@
+[Unit]
+Description=FZ-G1 silent fan curve
+After=systemd-modules-load.service
+Requires=systemd-modules-load.service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/sbin/fzg1-fand
+# belt and braces: always hand the fan back to the EC when we stop
+ExecStopPost=/bin/sh -c 'for d in /sys/class/hwmon/hwmon*; do [ "$(cat $d/name)" = fzg1_fan ] && echo 2 > $d/pwm1_enable; done; true'
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
